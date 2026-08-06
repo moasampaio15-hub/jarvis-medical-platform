@@ -33,16 +33,22 @@ def upgrade() -> None:
         sa.Column(
             "updated_at",
             sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
+            server_default=sa.func.now(),
             nullable=False,
         ),
     )
-    op.alter_column("users", "senha_hash", server_default=None)
-    op.alter_column("users", "email", existing_type=sa.String(length=255), type_=sa.String(length=320))
+    if op.get_bind().dialect.name != "sqlite":
+        op.alter_column("users", "senha_hash", server_default=None)
+        op.alter_column(
+            "users", "email", existing_type=sa.String(length=255), type_=sa.String(length=320)
+        )
 
 
 def downgrade() -> None:
-    op.alter_column("users", "email", existing_type=sa.String(length=320), type_=sa.String(length=255))
+    if op.get_bind().dialect.name != "sqlite":
+        op.alter_column(
+            "users", "email", existing_type=sa.String(length=320), type_=sa.String(length=255)
+        )
     op.drop_column("users", "updated_at")
     op.drop_column("users", "superuser")
     op.drop_column("users", "ativo")

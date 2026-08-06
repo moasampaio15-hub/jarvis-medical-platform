@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.auth import CurrentUser, create_access_token, create_refresh_token
+from app.auth.authorization import assign_role_to_user, ensure_default_rbac
 from app.auth.jwt import JWTValidationError, decode_token
 from app.auth.password import (
     PasswordValidationError,
@@ -71,7 +72,10 @@ def register_user(payload: UserCreate, db: Annotated[Session, Depends(get_db)]) 
         senha_hash=hash_password(payload.senha),
     )
     try:
+        ensure_default_rbac(db)
         db.add(user)
+        db.flush()
+        assign_role_to_user(db, user)
         db.commit()
     except IntegrityError as exc:
         db.rollback()

@@ -105,8 +105,8 @@ A plataforma deve tratar dados médicos como altamente sensíveis. Desde a funda
 
 - Criptografia em trânsito e em repouso.
 - Autenticação forte.
-- Autorização baseada em papéis e escopos.
-- Menor privilégio para serviços, usuários e integrações.
+- Autorização RBAC com papéis, permissões e menor privilégio.
+- Privilégios mínimos para serviços, usuários e integrações.
 - Auditoria de acesso e alterações em dados sensíveis.
 - Mascaramento de dados em logs.
 - Gestão segura de segredos fora do repositório.
