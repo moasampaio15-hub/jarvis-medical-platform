@@ -33,6 +33,8 @@ jarvis-medical-platform/
 
 Responsável por expor APIs, coordenar regras de negócio, autenticação, autorização, integrações externas e acesso controlado à camada de dados.
 
+A API inclui autenticação JWT e uma base de autorização RBAC com papéis, permissões, associação de papéis a usuários e associação de permissões a papéis. Consulte [`docs/RBAC.md`](docs/RBAC.md) para detalhes de uso de `require_permission()` e decorators de autorização.
+
 ### Frontend
 
 Responsável pela experiência do usuário, visualização de dados médicos e consumo seguro das APIs do backend.
@@ -63,7 +65,18 @@ Guarda a documentação técnica do projeto. Consulte [`docs/ARCHITECTURE.md`](d
 
 ## Começando
 
-Este repositório contém a estrutura inicial. Os comandos de instalação e execução serão definidos conforme as stacks do backend, frontend, banco de dados e módulos de IA forem escolhidas.
+Instale as dependências Python e execute os testes:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pytest
+```
+
+A evolução do banco de dados usa Alembic. Para aplicar as migrações no banco configurado em `DATABASE_URL`:
+
+```bash
+alembic upgrade head
+```
 
 Fluxo recomendado para os próximos passos:
 

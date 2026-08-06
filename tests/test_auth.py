@@ -1,13 +1,35 @@
-import pytest
-from fastapi.testclient import TestClient
+from typing import Annotated
 
+import pytest
+from fastapi import Depends, HTTPException
+from fastapi.testclient import TestClient
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.auth import require_permission, requires_permission
+from app.auth.authorization import get_user_permission_codes, get_user_role_codes
 from app.auth.password import verify_password
 from app.database.base import Base
 from app.database.connection import get_engine, get_session_factory
-from app.main import app
+from app.models.rbac import Role, UserRole
 from app.models.user import User
+from app.main import app
 
 STRONG_PASSWORD = "SenhaForte#123"
+
+
+@app.get("/_tests/rbac/paciente")
+def read_patient_test_area(
+    current_user: Annotated[User, Depends(require_permission("paciente"))],
+) -> dict[str, str]:
+    return {"email": current_user.email}
+
+
+@app.get("/_tests/rbac/admin")
+def read_admin_test_area(
+    current_user: Annotated[User, Depends(require_permission("admin"))],
+) -> dict[str, str]:
+    return {"email": current_user.email}
 
 
 @pytest.fixture()
@@ -40,6 +62,72 @@ def register_user(client: TestClient, email: str = "ada@example.com") -> dict:
     response = client.post("/auth/register", json=register_payload(email=email))
     assert response.status_code == 201
     return response.json()
+
+
+def test_register_assigns_default_patient_role_and_permissions(client):
+    register_user(client)
+
+    SessionLocal = get_session_factory()
+    with SessionLocal() as session:
+        user = session.query(User).filter_by(email="ada@example.com").one()
+        assert get_user_role_codes(session, user.id) == {"paciente"}
+        assert get_user_permission_codes(session, user.id) == {"paciente"}
+
+
+def test_require_permission_allows_patient_and_rejects_admin_area(client):
+    registration = register_user(client)
+    access_token = registration["tokens"]["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    patient_response = client.get("/_tests/rbac/paciente", headers=headers)
+    assert patient_response.status_code == 200
+    assert patient_response.json() == {"email": "ada@example.com"}
+
+    admin_response = client.get("/_tests/rbac/admin", headers=headers)
+    assert admin_response.status_code == 403
+    assert admin_response.json()["detail"]["required_permissions"] == ["admin"]
+
+
+def test_admin_role_grants_access_to_all_default_permissions(client):
+    registration = register_user(client)
+    access_token = registration["tokens"]["access_token"]
+
+    SessionLocal = get_session_factory()
+    with SessionLocal() as session:
+        user = session.query(User).filter_by(email="ada@example.com").one()
+        admin_role = session.scalar(select(Role).where(Role.codigo == "admin"))
+        assert admin_role is not None
+        session.add(UserRole(user_id=user.id, role_id=admin_role.id))
+        session.commit()
+
+    response = client.get(
+        "/_tests/rbac/admin",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"email": "ada@example.com"}
+
+
+def test_requires_permission_decorator_validates_service_function(client):
+    register_user(client)
+
+    @requires_permission("paciente")
+    def patient_service(*, current_user: User, db: Session) -> str:
+        return current_user.email
+
+    @requires_permission("admin")
+    def admin_service(*, current_user: User, db: Session) -> str:
+        return current_user.email
+
+    SessionLocal = get_session_factory()
+    with SessionLocal() as session:
+        user = session.query(User).filter_by(email="ada@example.com").one()
+        assert patient_service(current_user=user, db=session) == "ada@example.com"
+        with pytest.raises(HTTPException) as exc_info:
+            admin_service(current_user=user, db=session)
+
+    assert exc_info.value.status_code == 403
 
 
 def test_register_creates_active_user_with_hashed_password(client):

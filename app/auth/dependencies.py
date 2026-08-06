@@ -38,3 +38,19 @@ def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def require_permission(*permissions: str, require_all: bool = False):
+    from app.auth.authorization import assert_user_has_permissions, normalize_permission_code
+
+    required_permissions = tuple(normalize_permission_code(permission) for permission in permissions)
+    if not required_permissions:
+        raise ValueError("Informe pelo menos uma permissão para autorização.")
+
+    def dependency(current_user: CurrentUser, db: Annotated[Session, Depends(get_db)]) -> User:
+        assert_user_has_permissions(
+            current_user, required_permissions, db, require_all=require_all
+        )
+        return current_user
+
+    return dependency

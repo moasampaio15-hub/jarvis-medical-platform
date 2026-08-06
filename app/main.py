@@ -5,7 +5,7 @@ from app.database.connection import check_database_connection
 
 app = FastAPI(
     title="JARVIS Medical Platform",
-    description="API modular da JARVIS Medical Platform com autenticação JWT.",
+    description="API modular da JARVIS Medical Platform com autenticação JWT e autorização RBAC.",
     version="0.1.0",
 )
 app.include_router(auth_router)
