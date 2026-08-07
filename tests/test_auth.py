@@ -6,9 +6,14 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.auth import require_permission, requires_permission
-from app.auth.authorization import get_user_permission_codes, get_user_role_codes
-from app.auth.password import verify_password
+from app.auth import create_access_token, require_permission, require_role, requires_permission
+from app.auth.authorization import (
+    assign_role_to_user,
+    ensure_default_rbac,
+    get_user_permission_codes,
+    get_user_role_codes,
+)
+from app.auth.password import hash_password, verify_password
 from app.database.base import Base
 from app.database.connection import get_engine, get_session_factory
 from app.models.rbac import Role, UserRole
@@ -28,6 +33,27 @@ def read_patient_test_area(
 @app.get("/_tests/rbac/admin")
 def read_admin_test_area(
     current_user: Annotated[User, Depends(require_permission("admin"))],
+) -> dict[str, str]:
+    return {"email": current_user.email}
+
+
+@app.get("/_tests/rbac/prontuarios")
+def read_medical_record_test_area(
+    current_user: Annotated[User, Depends(require_permission("prontuarios:ler"))],
+) -> dict[str, str]:
+    return {"email": current_user.email}
+
+
+@app.post("/_tests/rbac/pacientes")
+def create_patient_test_area(
+    current_user: Annotated[User, Depends(require_permission("pacientes:criar"))],
+) -> dict[str, str]:
+    return {"email": current_user.email}
+
+
+@app.get("/_tests/rbac/medico-role")
+def read_medical_role_test_area(
+    current_user: Annotated[User, Depends(require_role("medico"))],
 ) -> dict[str, str]:
     return {"email": current_user.email}
 
@@ -64,6 +90,30 @@ def register_user(client: TestClient, email: str = "ada@example.com") -> dict:
     return response.json()
 
 
+def grant_role_to_email(email: str, role_code: str) -> None:
+    SessionLocal = get_session_factory()
+    with SessionLocal() as session:
+        ensure_default_rbac(session)
+        user = session.query(User).filter_by(email=email).one()
+        assign_role_to_user(session, user, role_code)
+        session.commit()
+
+
+def create_user_without_role(email: str = "sem-papel@example.com") -> str:
+    SessionLocal = get_session_factory()
+    with SessionLocal() as session:
+        ensure_default_rbac(session)
+        user = User(
+            nome="Usuário Sem Papel",
+            email=email,
+            senha_hash=hash_password(STRONG_PASSWORD),
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+        return create_access_token(user.id)
+
+
 def test_register_assigns_default_patient_role_and_permissions(client):
     register_user(client)
 
@@ -71,7 +121,11 @@ def test_register_assigns_default_patient_role_and_permissions(client):
     with SessionLocal() as session:
         user = session.query(User).filter_by(email="ada@example.com").one()
         assert get_user_role_codes(session, user.id) == {"paciente"}
-        assert get_user_permission_codes(session, user.id) == {"paciente"}
+        assert get_user_permission_codes(session, user.id) == {
+            "paciente",
+            "perfil:ler",
+            "portal_paciente:ler",
+        }
 
 
 def test_require_permission_allows_patient_and_rejects_admin_area(client):
@@ -128,6 +182,86 @@ def test_requires_permission_decorator_validates_service_function(client):
             admin_service(current_user=user, db=session)
 
     assert exc_info.value.status_code == 403
+
+
+def test_user_without_role_is_authenticated_but_forbidden(client):
+    access_token = create_user_without_role()
+
+    response = client.get(
+        "/rbac/me",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+
+    assert response.status_code == 403
+    assert response.json()["detail"]["required_permissions"] == ["perfil:ler"]
+
+
+def test_admin_can_list_rbac_resources_and_assign_roles(client):
+    admin_registration = register_user(client, email="admin@example.com")
+    patient_registration = register_user(client, email="paciente@example.com")
+    grant_role_to_email("admin@example.com", "admin")
+    admin_headers = {"Authorization": f"Bearer {admin_registration['tokens']['access_token']}"}
+
+    roles_response = client.get("/rbac/roles", headers=admin_headers)
+    assert roles_response.status_code == 200
+    assert {role["codigo"] for role in roles_response.json()} >= {
+        "admin",
+        "medico",
+        "recepcionista",
+        "paciente",
+    }
+
+    permissions_response = client.get("/rbac/permissions", headers=admin_headers)
+    assert permissions_response.status_code == 200
+    assert {permission["codigo"] for permission in permissions_response.json()} >= {
+        "rbac:roles:ler",
+        "rbac:roles:atribuir",
+        "prontuarios:ler",
+        "pacientes:criar",
+    }
+
+    user_id = patient_registration["user"]["id"]
+    assignment_response = client.post(
+        f"/rbac/users/{user_id}/roles/recepcionista",
+        headers=admin_headers,
+    )
+    assert assignment_response.status_code == 200
+    assert set(assignment_response.json()["roles"]) == {"paciente", "recepcionista"}
+    assert "pacientes:criar" in assignment_response.json()["permissions"]
+
+
+def test_medico_role_allows_clinical_record_and_rejects_reception_action(client):
+    registration = register_user(client, email="medico@example.com")
+    grant_role_to_email("medico@example.com", "medico")
+    headers = {"Authorization": f"Bearer {registration['tokens']['access_token']}"}
+
+    medical_record_response = client.get("/_tests/rbac/prontuarios", headers=headers)
+    assert medical_record_response.status_code == 200
+
+    role_response = client.get("/_tests/rbac/medico-role", headers=headers)
+    assert role_response.status_code == 200
+
+    create_patient_response = client.post("/_tests/rbac/pacientes", headers=headers)
+    assert create_patient_response.status_code == 403
+    assert create_patient_response.json()["detail"]["required_permissions"] == ["pacientes:criar"]
+
+
+def test_recepcionista_role_allows_patient_creation_and_rejects_medical_record(client):
+    registration = register_user(client, email="recepcao@example.com")
+    grant_role_to_email("recepcao@example.com", "recepcionista")
+    headers = {"Authorization": f"Bearer {registration['tokens']['access_token']}"}
+
+    create_patient_response = client.post("/_tests/rbac/pacientes", headers=headers)
+    assert create_patient_response.status_code == 200
+
+    medical_record_response = client.get("/_tests/rbac/prontuarios", headers=headers)
+    assert medical_record_response.status_code == 403
+    assert medical_record_response.json()["detail"]["required_permissions"] == ["prontuarios:ler"]
+
+    role_response = client.get("/_tests/rbac/medico-role", headers=headers)
+    assert role_response.status_code == 403
+    assert role_response.json()["detail"]["required_roles"] == ["medico"]
+
 
 
 def test_register_creates_active_user_with_hashed_password(client):
@@ -252,13 +386,24 @@ def test_me_requires_valid_bearer_token(client):
     assert response.status_code == 401
 
 
-def test_openapi_documents_auth_endpoints_and_bearer_security(client):
+def test_openapi_documents_auth_rbac_endpoints_and_bearer_security(client):
     response = client.get("/openapi.json")
 
     assert response.status_code == 200
     openapi = response.json()
-    for path in ["/auth/register", "/auth/login", "/auth/refresh", "/auth/me"]:
+    for path in [
+        "/auth/register",
+        "/auth/login",
+        "/auth/refresh",
+        "/auth/me",
+        "/rbac/me",
+        "/rbac/roles",
+        "/rbac/permissions",
+        "/rbac/users/{user_id}/roles/{role_code}",
+    ]:
         assert path in openapi["paths"]
+    assert "rbac:roles:ler" in openapi["paths"]["/rbac/roles"]["get"]["description"]
+    assert "perfil:ler" in openapi["paths"]["/rbac/me"]["get"]["description"]
     security_schemes = openapi["components"]["securitySchemes"].values()
     assert any(
         scheme["type"] == "http" and scheme["scheme"] == "bearer"
