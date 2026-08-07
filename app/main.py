@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
 
 from app.api.auth import router as auth_router
+from app.api.rbac import router as rbac_router
 from app.database.connection import check_database_connection
 
 app = FastAPI(
@@ -9,6 +10,7 @@ app = FastAPI(
     version="0.1.0",
 )
 app.include_router(auth_router)
+app.include_router(rbac_router)
 
 
 @app.get("/saúde/db", tags=["Saúde"])

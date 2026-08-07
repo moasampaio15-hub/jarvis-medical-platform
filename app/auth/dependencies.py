@@ -34,7 +34,9 @@ def get_current_user(
     if user is None or not user.ativo:
         raise credentials_exception
 
-    return user
+    from app.auth.authorization import load_user_authorization_context
+
+    return load_user_authorization_context(user, db)
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
@@ -48,9 +50,21 @@ def require_permission(*permissions: str, require_all: bool = False):
         raise ValueError("Informe pelo menos uma permissão para autorização.")
 
     def dependency(current_user: CurrentUser, db: Annotated[Session, Depends(get_db)]) -> User:
-        assert_user_has_permissions(
-            current_user, required_permissions, db, require_all=require_all
-        )
+        assert_user_has_permissions(current_user, required_permissions, db, require_all=require_all)
+        return current_user
+
+    return dependency
+
+
+def require_role(*roles: str, require_all: bool = False):
+    from app.auth.authorization import assert_user_has_roles, normalize_permission_code
+
+    required_roles = tuple(normalize_permission_code(role) for role in roles)
+    if not required_roles:
+        raise ValueError("Informe pelo menos um papel para autorização.")
+
+    def dependency(current_user: CurrentUser, db: Annotated[Session, Depends(get_db)]) -> User:
+        assert_user_has_roles(current_user, required_roles, db, require_all=require_all)
         return current_user
 
     return dependency

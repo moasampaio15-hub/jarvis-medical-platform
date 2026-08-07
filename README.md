@@ -33,7 +33,7 @@ jarvis-medical-platform/
 
 Responsável por expor APIs, coordenar regras de negócio, autenticação, autorização, integrações externas e acesso controlado à camada de dados.
 
-A API inclui autenticação JWT e uma base de autorização RBAC com papéis, permissões, associação de papéis a usuários e associação de permissões a papéis. Consulte [`docs/RBAC.md`](docs/RBAC.md) para detalhes de uso de `require_permission()` e decorators de autorização.
+A API inclui autenticação JWT e autorização RBAC completa com papéis, permissões granulares, associação de papéis a usuários, associação de permissões a papéis e dependências FastAPI `require_permission()` e `require_role()`. Consulte [`docs/RBAC.md`](docs/RBAC.md) para detalhes de uso e matriz inicial de permissões.
 
 ### Frontend
 
@@ -77,6 +77,14 @@ A evolução do banco de dados usa Alembic. Para aplicar as migrações no banco
 ```bash
 alembic upgrade head
 ```
+
+Depois de iniciar a API, a documentação Swagger fica disponível em `/docs`. Os endpoints RBAC administrativos são:
+
+- `GET /rbac/me`, protegido por `perfil:ler`.
+- `GET /rbac/roles`, protegido por `rbac:roles:ler`.
+- `GET /rbac/permissions`, protegido por `rbac:permissoes:ler`.
+- `POST /rbac/users/{user_id}/roles/{role_code}`, protegido por `rbac:roles:atribuir`.
+- `DELETE /rbac/users/{user_id}/roles/{role_code}`, protegido por `rbac:roles:atribuir`.
 
 Fluxo recomendado para os próximos passos:
 
