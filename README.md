@@ -86,6 +86,25 @@ Depois de iniciar a API, a documentação Swagger fica disponível em `/docs`. O
 - `POST /rbac/users/{user_id}/roles/{role_code}`, protegido por `rbac:roles:atribuir`.
 - `DELETE /rbac/users/{user_id}/roles/{role_code}`, protegido por `rbac:roles:atribuir`.
 
+### Módulo de cadastro e gestão de pacientes
+
+O backend inclui o módulo versionado de pacientes em `/api/v1/patients`, voltado somente a dados cadastrais e administrativos. Dados clínicos, prontuários e registros assistenciais não fazem parte deste módulo.
+
+Endpoints disponíveis:
+
+- `POST /api/v1/patients`, protegido por `patients:create`.
+- `GET /api/v1/patients`, protegido por `patients:read`, com filtros `nome`, `cpf`, `cns` e paginação `page`/`page_size`.
+- `GET /api/v1/patients/{patient_id}`, protegido por `patients:read`.
+- `PATCH /api/v1/patients/{patient_id}`, protegido por `patients:update`.
+- `DELETE /api/v1/patients/{patient_id}`, protegido por `patients:deactivate`; realiza inativação lógica (`ativo=false`) e não remove o registro fisicamente.
+
+Regras principais:
+
+- `cpf` e `cns` são únicos quando informados.
+- `email` é validado quando informado.
+- Índices existem para busca por `nome_completo`, `cpf` e `cns`.
+- Papéis com acesso administrativo ao módulo: `admin` (todas as ações), `medico`, `enfermeiro` e `recepcionista` (ler, criar e atualizar), `laboratorio` (ler). `farmacia` e `paciente` não recebem acesso por padrão.
+
 Fluxo recomendado para os próximos passos:
 
 1. Definir stack do backend.

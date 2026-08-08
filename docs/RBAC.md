@@ -19,9 +19,9 @@ As tabelas base são criadas pela migração `202608061701_create_rbac_tables.py
 | `medico` | Médico | Pacientes, consultas, prontuários, exames e medicamentos em contexto clínico. |
 | `enfermeiro` | Enfermeiro | Pacientes, consultas, prontuários e medicamentos em contexto assistencial. |
 | `recepcionista` | Recepcionista | Cadastro de pacientes e gestão de consultas. |
-| `laboratorio` | Laboratório | Pacientes e exames. |
-| `farmacia` | Farmácia | Pacientes, medicamentos e dispensação. |
-| `paciente` | Paciente | Perfil próprio e portal do paciente. |
+| `laboratorio` | Laboratório | Leitura cadastral de pacientes e exames. |
+| `farmacia` | Farmácia | Medicamentos e dispensação, sem acesso administrativo ao módulo versionado de pacientes por padrão. |
+| `paciente` | Paciente | Perfil próprio e portal do paciente, sem acesso administrativo ao módulo versionado de pacientes por padrão. |
 
 Novos usuários registrados pela API recebem o papel `paciente` por padrão.
 
@@ -35,9 +35,13 @@ Além das permissões homônimas aos papéis, mantidas por compatibilidade, o se
 | `rbac:roles:ler` | Listar papéis. |
 | `rbac:permissoes:ler` | Listar permissões. |
 | `rbac:roles:atribuir` | Conceder ou revogar papéis de usuários. |
-| `pacientes:ler` | Consultar dados de pacientes. |
-| `pacientes:criar` | Cadastrar pacientes. |
-| `pacientes:atualizar` | Atualizar cadastro de pacientes. |
+| `pacientes:ler` | Consultar dados de pacientes em fluxos legados ou futuros. |
+| `pacientes:criar` | Cadastrar pacientes em fluxos legados ou futuros. |
+| `pacientes:atualizar` | Atualizar cadastro de pacientes em fluxos legados ou futuros. |
+| `patients:read` | Consultar cadastros administrativos no módulo versionado `/api/v1/patients`. |
+| `patients:create` | Cadastrar pacientes no módulo versionado, sem dados clínicos. |
+| `patients:update` | Atualizar dados cadastrais no módulo versionado. |
+| `patients:deactivate` | Inativar logicamente pacientes no módulo versionado. |
 | `consultas:ler` | Consultar consultas. |
 | `consultas:gerenciar` | Criar, reagendar ou cancelar consultas. |
 | `prontuarios:ler` | Consultar prontuários. |
@@ -118,6 +122,11 @@ Os endpoints aparecem no Swagger/OpenAPI com descrições das permissões exigid
 | `GET /rbac/permissions` | `rbac:permissoes:ler` |
 | `POST /rbac/users/{user_id}/roles/{role_code}` | `rbac:roles:atribuir` |
 | `DELETE /rbac/users/{user_id}/roles/{role_code}` | `rbac:roles:atribuir` |
+| `POST /api/v1/patients` | `patients:create` |
+| `GET /api/v1/patients` | `patients:read` |
+| `GET /api/v1/patients/{patient_id}` | `patients:read` |
+| `PATCH /api/v1/patients/{patient_id}` | `patients:update` |
+| `DELETE /api/v1/patients/{patient_id}` | `patients:deactivate` |
 
 ## Decorators de autorização
 
