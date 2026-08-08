@@ -58,7 +58,6 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["permission_id"], ["permissions.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["role_id"], ["roles.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("role_id", "permission_id"),
-        sa.UniqueConstraint("role_id", "permission_id", name="uq_role_permissions_role_permission"),
     )
 
     op.create_table(
@@ -69,7 +68,6 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["role_id"], ["roles.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("user_id", "role_id"),
-        sa.UniqueConstraint("user_id", "role_id", name="uq_user_roles_user_role"),
     )
 
     roles_table = sa.table(
@@ -118,6 +116,15 @@ def upgrade() -> None:
             if id_ != 1
         ],
     )
+
+    if op.get_bind().dialect.name == "postgresql":
+        op.execute(
+            "SELECT setval(pg_get_serial_sequence('roles', 'id'), (SELECT max(id) FROM roles))"
+        )
+        op.execute(
+            "SELECT setval(pg_get_serial_sequence('permissions', 'id'), "
+            "(SELECT max(id) FROM permissions))"
+        )
 
 
 def downgrade() -> None:

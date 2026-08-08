@@ -37,17 +37,28 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    if op.get_bind().dialect.name != "sqlite":
-        op.alter_column("users", "senha_hash", server_default=None)
-        op.alter_column(
-            "users", "email", existing_type=sa.String(length=255), type_=sa.String(length=320)
+    with op.batch_alter_table("users") as batch_op:
+        batch_op.alter_column(
+            "senha_hash",
+            existing_type=sa.String(length=255),
+            existing_nullable=False,
+            server_default=None,
+        )
+        batch_op.alter_column(
+            "email",
+            existing_type=sa.String(length=255),
+            existing_nullable=False,
+            type_=sa.String(length=320),
         )
 
 
 def downgrade() -> None:
-    if op.get_bind().dialect.name != "sqlite":
-        op.alter_column(
-            "users", "email", existing_type=sa.String(length=320), type_=sa.String(length=255)
+    with op.batch_alter_table("users") as batch_op:
+        batch_op.alter_column(
+            "email",
+            existing_type=sa.String(length=320),
+            existing_nullable=False,
+            type_=sa.String(length=255),
         )
     op.drop_column("users", "updated_at")
     op.drop_column("users", "superuser")
