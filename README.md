@@ -105,6 +105,27 @@ Regras principais:
 - Índices existem para busca por `nome_completo`, `cpf` e `cns`.
 - Papéis com acesso administrativo ao módulo: `admin` (todas as ações), `medico`, `enfermeiro` e `recepcionista` (ler, criar e atualizar), `laboratorio` (ler). `farmacia` e `paciente` não recebem acesso por padrão.
 
+### Módulo de profissionais de saúde
+
+O backend inclui o módulo versionado de profissionais de saúde em `/api/v1/health-professionals`, voltado ao cadastro administrativo de profissionais com vínculo opcional a uma conta de usuário autenticável. O modelo não armazena senha e não duplica dados de autenticação do `User`.
+
+Endpoints disponíveis no Swagger (`/docs`):
+
+- `POST /api/v1/health-professionals`, protegido por `health_professionals:create`.
+- `GET /api/v1/health-professionals`, protegido por `health_professionals:read`, com filtros `nome`, `cpf`, `conselho`, `especialidade` e paginação `page`/`page_size`.
+- `GET /api/v1/health-professionals/{professional_id}`, protegido por `health_professionals:read`.
+- `PATCH /api/v1/health-professionals/{professional_id}`, protegido por `health_professionals:update`.
+- `DELETE /api/v1/health-professionals/{professional_id}`, protegido por `health_professionals:deactivate`; realiza inativação lógica (`ativo=false`) e não remove o registro fisicamente.
+
+Regras principais:
+
+- `cpf` é único quando informado.
+- `user_id` é opcional, referencia `users.id` e é único quando informado.
+- `conselho_numero`, `conselho_tipo` e `conselho_uf` são únicos em conjunto.
+- Tipos de conselho suportados inicialmente: `CRM`, `COREN`, `CRO`, `CRF`, `CREFITO`, `CRP` e `outro`.
+- Índices existem para busca por `nome_completo`, `cpf` e conselho.
+- Papéis com acesso ao módulo: `admin` (todas as ações), `medico`, `enfermeiro`, `recepcionista`, `laboratorio` e `farmacia` (leitura). `paciente` não recebe acesso administrativo por padrão.
+
 Fluxo recomendado para os próximos passos:
 
 1. Definir stack do backend.
