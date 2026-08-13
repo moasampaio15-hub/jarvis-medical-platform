@@ -8,6 +8,7 @@ from app.database.connection import get_database_url
 from app.models import (  # noqa: F401
     Appointment,
     HealthProfessional,
+    MedicalRecord,
     Patient,
     Permission,
     Role,
