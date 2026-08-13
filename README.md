@@ -126,6 +126,27 @@ Regras principais:
 - Índices existem para busca por `nome_completo`, `cpf` e conselho.
 - Papéis com acesso ao módulo: `admin` (todas as ações), `medico`, `enfermeiro`, `recepcionista`, `laboratorio` e `farmacia` (leitura). `paciente` não recebe acesso administrativo por padrão.
 
+### Módulo de agenda e consultas
+
+O backend inclui o módulo versionado de agenda em `/api/v1/appointments`, conectando pacientes e profissionais de saúde para agendamentos administrativos.
+
+Endpoints disponíveis no Swagger (`/docs`):
+
+- `POST /api/v1/appointments`, protegido por `consultas:gerenciar`.
+- `GET /api/v1/appointments`, protegido por `consultas:ler`, com filtros `start_at`, `end_at`, `patient_id`, `professional_id`, `status` e paginação `page`/`page_size`.
+- `GET /api/v1/appointments/{appointment_id}`, protegido por `consultas:ler`.
+- `PATCH /api/v1/appointments/{appointment_id}/status`, protegido por `consultas:gerenciar`.
+- `POST /api/v1/appointments/{appointment_id}/cancel`, protegido por `consultas:gerenciar`; cancela logicamente a consulta e libera o horário para novo agendamento.
+
+Regras principais:
+
+- A consulta referencia um paciente ativo e um profissional de saúde ativo.
+- O intervalo deve ter `end_at` posterior a `start_at`.
+- Status suportados inicialmente: `scheduled`, `confirmed`, `canceled`, `completed` e `no_show`.
+- Consultas `scheduled` e `confirmed` bloqueiam conflitos de horário por paciente e por profissional.
+- Consultas canceladas não bloqueiam novos agendamentos no mesmo horário.
+- Papéis com acesso padrão: `admin`, `medico` e `recepcionista` gerenciam consultas; `enfermeiro` consulta a agenda. `laboratorio`, `farmacia` e `paciente` não recebem acesso à agenda por padrão.
+
 Fluxo recomendado para os próximos passos:
 
 1. Definir stack do backend.

@@ -46,8 +46,8 @@ Além das permissões homônimas aos papéis, mantidas por compatibilidade, o se
 | `health_professionals:create` | Cadastrar profissionais de saúde no módulo versionado, com vínculo opcional a `users`. |
 | `health_professionals:update` | Atualizar dados administrativos e vínculo opcional de profissionais de saúde. |
 | `health_professionals:deactivate` | Inativar logicamente profissionais de saúde no módulo versionado. |
-| `consultas:ler` | Consultar consultas. |
-| `consultas:gerenciar` | Criar, reagendar ou cancelar consultas. |
+| `consultas:ler` | Consultar agenda e consultas. |
+| `consultas:gerenciar` | Criar consultas, atualizar status e cancelar agendamentos. |
 | `prontuarios:ler` | Consultar prontuários. |
 | `prontuarios:escrever` | Registrar evoluções ou anotações clínicas. |
 | `exames:ler` | Consultar exames. |
@@ -136,6 +136,11 @@ Os endpoints aparecem no Swagger/OpenAPI com descrições das permissões exigid
 | `GET /api/v1/health-professionals/{professional_id}` | `health_professionals:read` |
 | `PATCH /api/v1/health-professionals/{professional_id}` | `health_professionals:update` |
 | `DELETE /api/v1/health-professionals/{professional_id}` | `health_professionals:deactivate` |
+| `POST /api/v1/appointments` | `consultas:gerenciar` |
+| `GET /api/v1/appointments` | `consultas:ler` |
+| `GET /api/v1/appointments/{appointment_id}` | `consultas:ler` |
+| `PATCH /api/v1/appointments/{appointment_id}/status` | `consultas:gerenciar` |
+| `POST /api/v1/appointments/{appointment_id}/cancel` | `consultas:gerenciar` |
 
 ## Decorators de autorização
 
