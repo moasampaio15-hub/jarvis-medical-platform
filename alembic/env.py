@@ -11,6 +11,8 @@ from app.models import (  # noqa: F401
     MedicalRecord,
     Patient,
     Permission,
+    Prescription,
+    PrescriptionItem,
     Role,
     RolePermission,
     User,

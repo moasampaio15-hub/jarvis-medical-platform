@@ -5,6 +5,7 @@ from app.api.auth import router as auth_router
 from app.api.health_professionals import router as health_professionals_router
 from app.api.medical_records import router as medical_records_router
 from app.api.patients import router as patients_router
+from app.api.prescriptions import router as prescriptions_router
 from app.api.rbac import router as rbac_router
 from app.database.connection import check_database_connection
 
@@ -19,6 +20,7 @@ app.include_router(patients_router)
 app.include_router(health_professionals_router)
 app.include_router(appointments_router)
 app.include_router(medical_records_router)
+app.include_router(prescriptions_router)
 
 
 @app.get("/saúde/db", tags=["Saúde"])

@@ -69,6 +69,7 @@ PERMISSION_DEFINITIONS: tuple[tuple[str, str, str], ...] = (
     ("exames:ler", "Ler exames", "Permite consultar pedidos e resultados de exames."),
     ("exames:gerenciar", "Gerenciar exames", "Permite criar, processar e publicar resultados de exames."),
     ("medicamentos:ler", "Ler medicamentos", "Permite consultar prescrições e medicamentos."),
+    ("medicamentos:escrever", "Escrever medicamentos", "Permite criar e atualizar prescrições de medicamentos."),
     ("medicamentos:dispensar", "Dispensar medicamentos", "Permite registrar dispensação de medicamentos."),
     ("portal_paciente:ler", "Ler portal do paciente", "Permite consultar informações próprias no portal do paciente."),
 )
@@ -89,6 +90,7 @@ ROLE_PERMISSION_CODES: dict[str, tuple[str, ...]] = {
         "prontuarios:escrever",
         "exames:ler",
         "medicamentos:ler",
+        "medicamentos:escrever",
     ),
     "enfermeiro": (
         "enfermeiro",
@@ -102,6 +104,7 @@ ROLE_PERMISSION_CODES: dict[str, tuple[str, ...]] = {
         "prontuarios:ler",
         "prontuarios:escrever",
         "medicamentos:ler",
+        "medicamentos:escrever",
     ),
     "recepcionista": (
         "recepcionista",
