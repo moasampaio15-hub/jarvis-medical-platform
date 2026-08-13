@@ -6,6 +6,7 @@ from sqlalchemy import engine_from_config, pool
 from app.database.base import Base
 from app.database.connection import get_database_url
 from app.models import (  # noqa: F401
+    Appointment,
     HealthProfessional,
     Patient,
     Permission,
