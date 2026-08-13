@@ -5,7 +5,15 @@ from sqlalchemy import engine_from_config, pool
 
 from app.database.base import Base
 from app.database.connection import get_database_url
-from app.models import Patient, Permission, Role, RolePermission, User, UserRole  # noqa: F401
+from app.models import (  # noqa: F401
+    HealthProfessional,
+    Patient,
+    Permission,
+    Role,
+    RolePermission,
+    User,
+    UserRole,
+)
 
 config = context.config
 

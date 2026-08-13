@@ -16,12 +16,12 @@ As tabelas base são criadas pela migração `202608061701_create_rbac_tables.py
 | Código | Nome | Escopo padrão |
 | --- | --- | --- |
 | `admin` | Administrador | Administração total e todas as permissões cadastradas. |
-| `medico` | Médico | Pacientes, consultas, prontuários, exames e medicamentos em contexto clínico. |
-| `enfermeiro` | Enfermeiro | Pacientes, consultas, prontuários e medicamentos em contexto assistencial. |
-| `recepcionista` | Recepcionista | Cadastro de pacientes e gestão de consultas. |
-| `laboratorio` | Laboratório | Leitura cadastral de pacientes e exames. |
-| `farmacia` | Farmácia | Medicamentos e dispensação, sem acesso administrativo ao módulo versionado de pacientes por padrão. |
-| `paciente` | Paciente | Perfil próprio e portal do paciente, sem acesso administrativo ao módulo versionado de pacientes por padrão. |
+| `medico` | Médico | Pacientes, leitura de profissionais de saúde, consultas, prontuários, exames e medicamentos em contexto clínico. |
+| `enfermeiro` | Enfermeiro | Pacientes, leitura de profissionais de saúde, consultas, prontuários e medicamentos em contexto assistencial. |
+| `recepcionista` | Recepcionista | Cadastro de pacientes, leitura de profissionais de saúde e gestão de consultas. |
+| `laboratorio` | Laboratório | Leitura cadastral de pacientes, leitura de profissionais de saúde e exames. |
+| `farmacia` | Farmácia | Leitura de profissionais de saúde, medicamentos e dispensação, sem acesso administrativo ao módulo versionado de pacientes por padrão. |
+| `paciente` | Paciente | Perfil próprio e portal do paciente, sem acesso administrativo a pacientes ou profissionais de saúde por padrão. |
 
 Novos usuários registrados pela API recebem o papel `paciente` por padrão.
 
@@ -42,6 +42,10 @@ Além das permissões homônimas aos papéis, mantidas por compatibilidade, o se
 | `patients:create` | Cadastrar pacientes no módulo versionado, sem dados clínicos. |
 | `patients:update` | Atualizar dados cadastrais no módulo versionado. |
 | `patients:deactivate` | Inativar logicamente pacientes no módulo versionado. |
+| `health_professionals:read` | Consultar cadastros administrativos no módulo versionado `/api/v1/health-professionals`. |
+| `health_professionals:create` | Cadastrar profissionais de saúde no módulo versionado, com vínculo opcional a `users`. |
+| `health_professionals:update` | Atualizar dados administrativos e vínculo opcional de profissionais de saúde. |
+| `health_professionals:deactivate` | Inativar logicamente profissionais de saúde no módulo versionado. |
 | `consultas:ler` | Consultar consultas. |
 | `consultas:gerenciar` | Criar, reagendar ou cancelar consultas. |
 | `prontuarios:ler` | Consultar prontuários. |
@@ -127,6 +131,11 @@ Os endpoints aparecem no Swagger/OpenAPI com descrições das permissões exigid
 | `GET /api/v1/patients/{patient_id}` | `patients:read` |
 | `PATCH /api/v1/patients/{patient_id}` | `patients:update` |
 | `DELETE /api/v1/patients/{patient_id}` | `patients:deactivate` |
+| `POST /api/v1/health-professionals` | `health_professionals:create` |
+| `GET /api/v1/health-professionals` | `health_professionals:read` |
+| `GET /api/v1/health-professionals/{professional_id}` | `health_professionals:read` |
+| `PATCH /api/v1/health-professionals/{professional_id}` | `health_professionals:update` |
+| `DELETE /api/v1/health-professionals/{professional_id}` | `health_professionals:deactivate` |
 
 ## Decorators de autorização
 
