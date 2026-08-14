@@ -1,0 +1,79 @@
+:root { font-family: 'Segoe UI', system-ui, sans-serif; color: #243b53; background: #f4f7f9; font-synthesis: none; text-rendering: optimizeLegibility; --navy: #102a43; --blue: #176b87; --teal: #16847b; --cream: #f8f5ee; --border: #d9e2ec; --shadow: 0 24px 60px rgba(16, 42, 67, .12); }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.brand { display: flex; align-items: center; gap: 12px; color: inherit; }
+.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid currentColor; border-radius: 13px; font: 700 22px 'Segoe UI', system-ui, sans-serif; }
+.brand strong, .brand small { display: block; }
+.brand strong { font: 700 17px 'Segoe UI', system-ui, sans-serif; letter-spacing: .08em; }
+.brand small { margin-top: 1px; font-size: 11px; opacity: .7; }
+.eyebrow { display: block; margin-bottom: 10px; color: var(--teal); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.muted { color: #627d98; }
+
+.login-layout { min-height: 100vh; display: grid; grid-template-columns: minmax(380px, .95fr) minmax(460px, 1.05fr); }
+.login-story { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; padding: 48px 7vw; overflow: hidden; color: white; background: var(--navy); }
+.login-story::before, .login-story::after { content: ''; position: absolute; border-radius: 999px; border: 1px solid rgba(255,255,255,.1); }
+.login-story::before { width: 560px; height: 560px; right: -300px; top: 8%; }
+.login-story::after { width: 380px; height: 380px; left: -240px; bottom: -80px; }
+.story-copy { position: relative; max-width: 590px; z-index: 1; }
+.story-copy .eyebrow { color: #77d6cc; }
+.story-copy h1 { margin: 0; font: 700 clamp(38px, 4.7vw, 68px)/1.08 'Segoe UI', system-ui, sans-serif; letter-spacing: -.045em; }
+.story-copy p { max-width: 520px; margin: 26px 0 0; color: #bcccdc; font-size: 18px; line-height: 1.65; }
+.privacy-note { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; color: #bcccdc; font-size: 13px; }
+.privacy-note span { width: 24px; height: 24px; display: grid; place-items: center; color: #77d6cc; border: 1px solid rgba(119,214,204,.45); border-radius: 50%; }
+.login-panel { display: grid; place-items: center; padding: 42px; background: var(--cream); }
+.login-card { width: min(100%, 440px); padding: 52px; border: 1px solid rgba(217,226,236,.85); border-radius: 24px; background: rgba(255,255,255,.82); box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+.mobile-brand { display: none; }
+.login-card h2 { margin: 0 0 8px; color: var(--navy); font: 700 36px 'Segoe UI', system-ui, sans-serif; letter-spacing: -.04em; }
+.login-card > .muted { margin: 0 0 34px; line-height: 1.55; }
+.login-card label { display: block; margin: 19px 0 8px; color: #334e68; font-size: 13px; font-weight: 700; }
+.login-card input { width: 100%; height: 50px; padding: 0 15px; color: var(--navy); border: 1px solid #bcccdc; border-radius: 11px; outline: none; background: white; transition: border-color .2s, box-shadow .2s; }
+.login-card input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(23,107,135,.1); }
+.error-message { margin-top: 18px; padding: 12px 14px; color: #9b2c2c; border: 1px solid #fed7d7; border-radius: 10px; background: #fff5f5; font-size: 13px; }
+.primary-button { width: 100%; height: 52px; margin-top: 24px; color: white; border: 0; border-radius: 11px; background: var(--blue); font-weight: 700; box-shadow: 0 10px 24px rgba(23,107,135,.22); transition: transform .2s, background .2s; }
+.primary-button:hover:not(:disabled) { transform: translateY(-1px); background: #125973; }
+.primary-button:disabled { cursor: wait; opacity: .65; }
+.support-copy { margin: 20px 0 0; color: #829ab1; font-size: 12px; line-height: 1.5; text-align: center; }
+
+.app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; }
+.sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; padding: 32px 24px; color: white; background: var(--navy); }
+.sidebar nav { display: grid; gap: 5px; margin-top: 54px; }
+.nav-item { padding: 12px 14px; color: #9fb3c8; border-radius: 9px; text-decoration: none; font-size: 14px; font-weight: 600; }
+.nav-item:hover, .nav-item.active { color: white; background: rgba(255,255,255,.09); }
+.logout-button { margin-top: auto; padding: 12px; color: #bcccdc; border: 1px solid rgba(255,255,255,.15); border-radius: 9px; background: transparent; }
+.dashboard { padding: 42px clamp(28px, 5vw, 76px) 72px; }
+.topbar, .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.topbar h1 { margin: 0; color: var(--navy); font: 700 34px 'Segoe UI', system-ui, sans-serif; letter-spacing: -.04em; }
+.health-pill { display: flex; align-items: center; gap: 9px; padding: 9px 13px; color: #627d98; border: 1px solid var(--border); border-radius: 999px; background: white; font-size: 12px; font-weight: 700; }
+.health-pill span { width: 8px; height: 8px; border-radius: 50%; background: #9fb3c8; }
+.health-pill.online span { background: #38a169; box-shadow: 0 0 0 4px #c6f6d5; }
+.health-pill.offline span { background: #e53e3e; box-shadow: 0 0 0 4px #fed7d7; }
+.welcome-card { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin: 42px 0 48px; padding: clamp(28px, 4vw, 48px); color: white; border-radius: 22px; background: linear-gradient(125deg, #173f5f, #176b87 72%, #16847b); box-shadow: var(--shadow); }
+.welcome-card h2 { max-width: 680px; margin: 0; font: 700 clamp(27px, 3vw, 43px)/1.15 'Segoe UI', system-ui, sans-serif; letter-spacing: -.045em; }
+.welcome-card p { margin: 16px 0 0; color: #d9e2ec; }
+.welcome-card .eyebrow { color: #a8ede6; }
+.user-badge { min-width: 230px; padding: 16px; border: 1px solid rgba(255,255,255,.15); border-radius: 12px; background: rgba(255,255,255,.08); }
+.user-badge strong, .user-badge span { display: block; }
+.user-badge span { margin-top: 4px; color: #bcccdc; font-size: 12px; }
+.section-heading { margin-bottom: 20px; }
+.section-heading h2 { margin: 0; color: var(--navy); font: 700 26px 'Segoe UI', system-ui, sans-serif; }
+.module-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.module-card { min-height: 230px; padding: 24px; border: 1px solid var(--border); border-top: 4px solid var(--blue); border-radius: 16px; background: white; transition: transform .2s, box-shadow .2s; }
+.module-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(16,42,67,.09); }
+.module-card.teal { border-top-color: #16847b; }
+.module-card.violet { border-top-color: #6b5b95; }
+.module-card.amber { border-top-color: #d69e2e; }
+.module-index { color: #9fb3c8; font: 700 12px 'Segoe UI', system-ui, sans-serif; }
+.module-card h3 { margin: 30px 0 8px; color: var(--navy); font: 700 19px 'Segoe UI', system-ui, sans-serif; }
+.module-card p { min-height: 44px; margin: 0; color: #627d98; font-size: 13px; line-height: 1.55; }
+.module-card button { margin-top: 24px; padding: 0; color: var(--blue); border: 0; background: transparent; font-size: 12px; font-weight: 700; }
+.loading-screen { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 24px; color: var(--navy); background: var(--cream); }
+
+@media (max-width: 1050px) { .module-grid { grid-template-columns: repeat(2, 1fr); } .welcome-card { align-items: start; flex-direction: column; } }
+@media (max-width: 760px) {
+  .login-layout { display: block; } .login-story { display: none; } .login-panel { min-height: 100vh; padding: 24px; } .login-card { padding: 36px 26px; } .mobile-brand { display: block; margin-bottom: 42px; color: var(--navy); }
+  .app-shell { display: block; } .sidebar { position: static; width: 100%; height: auto; padding: 20px; } .sidebar nav { display: none; } .logout-button { position: absolute; top: 22px; right: 20px; margin: 0; }
+  .dashboard { padding: 30px 20px 50px; } .topbar, .section-heading { align-items: start; flex-direction: column; } .module-grid { grid-template-columns: 1fr; } .module-card { min-height: 190px; }
+}
