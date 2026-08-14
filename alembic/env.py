@@ -7,6 +7,8 @@ from app.database.base import Base
 from app.database.connection import get_database_url
 from app.models import (  # noqa: F401
     Appointment,
+    ExamOrder,
+    ExamOrderItem,
     HealthProfessional,
     MedicalRecord,
     Patient,

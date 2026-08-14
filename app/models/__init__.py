@@ -1,4 +1,5 @@
 from app.models.appointment import Appointment
+from app.models.exam_order import ExamOrder, ExamOrderItem
 from app.models.health_professional import HealthProfessional
 from app.models.medical_record import MedicalRecord
 from app.models.patient import Patient
@@ -8,6 +9,8 @@ from app.models.user import User
 
 __all__ = [
     "Appointment",
+    "ExamOrder",
+    "ExamOrderItem",
     "HealthProfessional",
     "MedicalRecord",
     "Patient",
