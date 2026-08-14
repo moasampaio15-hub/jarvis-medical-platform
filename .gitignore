@@ -83,6 +83,12 @@ Thumbs.db
 *.log
 logs/
 
+# Node.js / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
 # Local databases and generated data
 *.sqlite
 *.sqlite3

@@ -39,6 +39,8 @@ A API inclui autenticação JWT e autorização RBAC completa com papéis, permi
 
 Responsável pela experiência do usuário, visualização de dados médicos e consumo seguro das APIs do backend.
 
+A base web usa React, TypeScript e Vite, com autenticação integrada, restauração de sessão e verificação de disponibilidade da API. Consulte [`frontend/README.md`](frontend/README.md) para execução local e [`docs/ADR-001-FRONTEND-STACK.md`](docs/ADR-001-FRONTEND-STACK.md) para a decisão arquitetural.
+
 ### AI
 
 Área dedicada a modelos, pipelines, prompts, avaliação de resultados, governança e componentes de inteligência artificial. Qualquer uso clínico deve passar por validação técnica, médica e regulatória.
