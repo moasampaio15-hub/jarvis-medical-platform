@@ -16,10 +16,6 @@ jobs:
     name: Frontend lint and build
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -32,13 +28,13 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm --prefix frontend ci
 
       - name: Run frontend lint
-        run: npm run lint
+        run: npm --prefix frontend run lint
 
       - name: Build frontend
-        run: npm run build
+        run: npm --prefix frontend run build
 
   validate:
     name: Alembic and pytest
