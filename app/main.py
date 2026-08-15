@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, status
 
 from app.api.appointments import router as appointments_router
 from app.api.auth import router as auth_router
+from app.api.clinical_diagnoses import router as clinical_diagnoses_router
 from app.api.exam_orders import router as exam_orders_router
 from app.api.exam_results import router as exam_results_router
 from app.api.health_professionals import router as health_professionals_router
@@ -29,6 +30,7 @@ app.include_router(exam_orders_router)
 app.include_router(exam_results_router)
 app.include_router(patient_allergies_router)
 app.include_router(vital_signs_router)
+app.include_router(clinical_diagnoses_router)
 
 
 @app.get("/saúde/db", tags=["Saúde"])
