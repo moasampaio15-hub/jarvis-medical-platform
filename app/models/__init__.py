@@ -8,6 +8,7 @@ from app.models.patient import Patient
 from app.models.prescription import Prescription, PrescriptionItem
 from app.models.rbac import Permission, Role, RolePermission, UserRole
 from app.models.user import User
+from app.models.vital_sign import VitalSign
 
 __all__ = [
     "Appointment",
@@ -26,4 +27,5 @@ __all__ = [
     "RolePermission",
     "User",
     "UserRole",
+    "VitalSign",
 ]

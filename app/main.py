@@ -10,6 +10,7 @@ from app.api.patients import router as patients_router
 from app.api.patient_allergies import router as patient_allergies_router
 from app.api.prescriptions import router as prescriptions_router
 from app.api.rbac import router as rbac_router
+from app.api.vital_signs import router as vital_signs_router
 from app.database.connection import check_database_connection
 
 app = FastAPI(
@@ -27,6 +28,7 @@ app.include_router(prescriptions_router)
 app.include_router(exam_orders_router)
 app.include_router(exam_results_router)
 app.include_router(patient_allergies_router)
+app.include_router(vital_signs_router)
 
 
 @app.get("/saúde/db", tags=["Saúde"])
