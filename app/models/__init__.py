@@ -1,4 +1,5 @@
 from app.models.appointment import Appointment
+from app.models.clinical_diagnosis import ClinicalDiagnosis
 from app.models.exam_order import ExamOrder, ExamOrderItem
 from app.models.exam_result import ExamResult, ExamResultItem
 from app.models.health_professional import HealthProfessional
@@ -12,6 +13,7 @@ from app.models.vital_sign import VitalSign
 
 __all__ = [
     "Appointment",
+    "ClinicalDiagnosis",
     "ExamOrder",
     "ExamOrderItem",
     "ExamResult",
